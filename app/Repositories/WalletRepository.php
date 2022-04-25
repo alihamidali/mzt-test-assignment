@@ -29,11 +29,25 @@ class WalletRepository
     {
         $wallet = $this->findWalletByCompanyId($company->id);
         $totalCoins = $wallet->coins;
-        $totalCoins -= $amount;
 
         if ($totalCoins <= 0) {
             throw new \Exception('Out of coins!');
         }
+
+        $totalCoins -= $amount;
+
+        $wallet->coins = $totalCoins;
+        return $wallet->save();
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function refundCoins($company, $amount)
+    {
+        $wallet = $this->findWalletByCompanyId($company->id);
+        $totalCoins = $wallet->coins;
+        $totalCoins += $amount;
 
         $wallet->coins = $totalCoins;
         return $wallet->save();

@@ -5,8 +5,11 @@ namespace App\Http\Requests;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Validation\ValidationException;
 
-class ContactCandidateRequest extends BaseRequest
+class CandidateRequest extends BaseRequest
 {
+    /**
+     * @return string[]
+     */
     public function rules(): array
     {
         return [

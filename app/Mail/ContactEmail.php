@@ -7,19 +7,19 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class CompanyIntroduction extends Mailable
+class ContactEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    private $candidateName;
-    private $companyName;
+    private string $candidateName;
+    private string $companyName;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($candidateName, $companyName)
+    public function __construct(string $candidateName, string $companyName)
     {
         //
         $this->candidateName = $candidateName;

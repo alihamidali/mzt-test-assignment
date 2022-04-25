@@ -14,8 +14,22 @@
           <span v-for="strength in JSON.parse(candidate.strengths)" class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{{strength}}</span>
         </div>
         <div class="p-6 float-right">
-          <button :class="{ 'disable-button': disableContactButton }" :disabled="disableContactButton" class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow" @click="contactCandidate(candidate.id)">Contact</button>
-          <button class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 hover:bg-teal-100 rounded shadow">Hire</button>
+          <button
+              :class="{ 'disable-button': candidate.contacted_by || disableContactButton }"
+              :disabled="disableContactButton"
+              @click="contactCandidate(candidate.id, candidate.contacted_by)"
+              class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
+          >
+            {{ candidate.contacted_by ? 'Contact Email Sent!' : 'Contact'}}
+          </button>
+          <button
+              class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 hover:bg-teal-100 rounded shadow"
+              :class="{ 'disable-button': candidate.hired_by || disableHireButton }"
+              :disabled="disableHireButton"
+              @click="hireCandidate(candidate.id, candidate.hired_by)"
+          >
+            {{ candidate.hired_by ? 'Hired' : 'Hire'}}
+          </button>
         </div>
       </div>
     </div>
@@ -27,21 +41,42 @@ export default {
   props: ['candidates', 'company'],
   data () {
     return {
-      disableContactButton: false
+      disableContactButton: false,
+      disableHireButton: false
     }
   },
   methods: {
-    contactCandidate(candidate_id) {
+    contactCandidate(candidate_id, contacted_by) {
+      if (contacted_by) {
+        return false
+      }
       this.disableContactButton = true
       axios
           .post('candidates-contact', {candidate_id: candidate_id, company_id: this.company.id})
           .then((response) => {
             if (response.data.status) {
-              alert('Email sent to candidate successfully!');
+              alert('Contact Email sent to candidate successfully!');
             } else {
               alert(response.data.message);
             }
-            this.disableContactButton = false
+            window.location.reload()
+          });
+    },
+    hireCandidate(candidate_id, hired_by) {
+      if (hired_by) {
+        return false
+      }
+
+      this.disableHireButton = true
+      axios
+          .post('candidates-hire', {candidate_id: candidate_id, company_id: this.company.id})
+          .then((response) => {
+            if (response.data.status) {
+              alert('Hiring Email sent to candidate successfully!');
+            } else {
+              alert(response.data.message);
+            }
+            window.location.reload()
           });
     }
   }
