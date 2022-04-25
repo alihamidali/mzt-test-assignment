@@ -22,4 +22,20 @@ class WalletRepository
         return $this->findWalletByCompanyId($company->id)->coins;
     }
 
+    /**
+     * @throws \Exception
+     */
+    public function deductCoins($company, $amount)
+    {
+        $wallet = $this->findWalletByCompanyId($company->id);
+        $totalCoins = $wallet->coins;
+        $totalCoins -= $amount;
+
+        if ($totalCoins <= 0) {
+            throw new \Exception('Out of coins!');
+        }
+
+        $wallet->coins = $totalCoins;
+        return $wallet->save();
+    }
 }

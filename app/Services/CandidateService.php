@@ -38,4 +38,35 @@ class CandidateService
         ];
     }
 
+    public function contactCandidate($candidateId, $companyId)
+    {
+        $candidate  = $this->candidateRepository->find($candidateId);
+        $company    = $this->companyRepository->find($companyId);
+        $status     = true;
+        $message    = '';
+
+        try {
+            DB::beginTransaction();
+
+            $this->candidateRepository->updateContactedBy($candidate, $company);
+            $this->walletRepository->deductCoins($company, self::HIRING_FEE);
+
+            CandidateContactedByCompany::dispatch($company, $candidate);
+
+            DB::commit();
+        } catch (\Exception $exception) {
+
+            Log::error($exception->getMessage());
+            DB::rollBack();
+
+            $status     = false;
+            $message    = $exception->getMessage();
+        }
+
+        return [
+            $status,
+            $message,
+        ];
+    }
+
 }

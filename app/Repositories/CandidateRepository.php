@@ -11,4 +11,9 @@ class CandidateRepository
 
     use Eloquent;
 
+    public function updateContactedBy($candidate, $company)
+    {
+        $candidate->contacted_by = $company->id;
+        $candidate->save();
+    }
 }

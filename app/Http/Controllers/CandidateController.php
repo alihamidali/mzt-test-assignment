@@ -25,10 +25,18 @@ class CandidateController extends Controller
         return view('candidates.index', compact('candidates', 'coins', 'company'));
     }
 
-    public function contact()
+    public function contact(ContactCandidateRequest $request): array
     {
-        // @todo
-        // Your code goes here...
+        $candidateId    = $request->get('candidate_id');
+        $companyId      = $request->get('company_id');
+
+        list($status, $message) = $this->candidateService->contactCandidate($candidateId, $companyId);
+
+        return [
+            'status'    => $status,
+            'message'   => $message
+        ];
+
     }
 
     public function hire()
