@@ -2,25 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Candidate;
-use App\Models\Company;
-use App\Repositories\CompanyRepository;
+use App\Http\Requests\ContactCandidateRequest;
+use App\Services\CandidateService;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 
 class CandidateController extends Controller
 {
-    private CompanyRepository $companyRepository;
+    private CandidateService $candidateService;
 
-    public function __construct(CompanyRepository $companyRepository)
-    {
-        $this->companyRepository = $companyRepository;
+    public function __construct(
+        CandidateService $candidateService
+    ) {
+        $this->candidateService = $candidateService;
     }
 
-    public function index()
+    public function index(): Factory|View|Application
     {
-        $candidates = Candidate::all();
-        $coins = $this->companyRepository->getCoins(1);
+        list($candidates, $company, $coins) = $this->candidateService->getCandidatesAndCompanyCoins();
 
-        return view('candidates.index', compact('candidates', 'coins'));
+        return view('candidates.index', compact('candidates', 'coins', 'company'));
     }
 
     public function contact()
